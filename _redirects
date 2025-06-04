@@ -1,0 +1,8 @@
+# Redirect all routes to index.html for PWA support
+/*    /index.html   200
+
+# Handle emergency shortcut
+/?emergency=true    /index.html   200
+
+# Handle screen shortcuts
+/?screen=*    /index.html   200 
