@@ -776,7 +776,7 @@
                 </div>
 
                 <button class="btn" style="background: white; color: #6366f1; border: 2px solid #6366f1;" onclick="shareProgress()">
-                    📤 Share Progress with Care Team
+                    📤 Export Results
                 </button>
             </div>
         </div>
@@ -1653,7 +1653,7 @@
                     </div>
                     
                     <button class="btn btn-danger" onclick="emergencyContact()" style="margin: 0;">
-                        📞 Contact Care Team
+                        📞 Contact
                     </button>
                 `
             },
@@ -2219,14 +2219,53 @@
                     });
                 }
                 
-            
+                // Update lifestyle statistics
+                updateLifestyleStats();
                 
             } catch (error) {
                 handleError(error, 'updateProgressCharts');
             }
         }
         
-        
+        function updateLifestyleStats() {
+            try {
+                const stats = AppState.getLifestyleStats(7);
+                const goalAchievement = {
+                    exercise: Math.round((stats.exercise / AppState.goals.exercise) * 100),
+                    sleep: Math.round((stats.sleep / 7) * 100),
+                    hydration: Math.round((stats.hydration / 7) * 100),
+                    nutrition: Math.round((stats.nutrition / 7) * 100)
+                };
+                
+                // Update weekly report
+                const reportItems = document.querySelectorAll('.report-item');
+                if (reportItems.length >= 4) {
+                    reportItems[0].innerHTML = `
+                        <span>🏋️‍♀️ Exercise</span>
+                        <span style="color: ${goalAchievement.exercise >= 80 ? '#10b981' : '#f59e0b'}; font-weight: 600;">
+                            ${stats.exercise}/7 days
+                        </span>
+                    `;
+                    reportItems[1].innerHTML = `
+                        <span>😴 Good Sleep</span>
+                        <span style="color: ${goalAchievement.sleep >= 80 ? '#10b981' : '#f59e0b'}; font-weight: 600;">
+                            ${stats.sleep}/7 nights
+                        </span>
+                    `;
+                    reportItems[2].innerHTML = `
+                        <span>💧 Hydration</span>
+                        <span style="color: ${goalAchievement.hydration >= 80 ? '#10b981' : '#f59e0b'}; font-weight: 600;">
+                            ${stats.hydration}/7 days
+                        </span>
+                    `;
+                    reportItems[3].innerHTML = `
+                        <span>🥗 Healthy Diet</span>
+                        <span style="color: ${goalAchievement.nutrition >= 80 ? '#10b981' : '#f59e0b'}; font-weight: 600;">
+                            ${stats.nutrition}/7 days
+                        </span>
+                    `;
+                }
+                
                 // Update overall score
                 const overallScore = Math.round(Object.values(goalAchievement).reduce((a, b) => a + b, 0) / 4);
                 const scoreElement = document.querySelector('.report-score');
@@ -2235,7 +2274,7 @@
                 }
                 
             } catch (error) {
-                handleError(error);
+                handleError(error, 'updateLifestyleStats');
             }
         }
         
